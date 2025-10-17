@@ -18,9 +18,9 @@ class Board
     DarkPawn.new([1, 0]), DarkPawn.new([1, 1]), DarkPawn.new([1, 2]), DarkPawn.new([1, 3]),
     DarkPawn.new([1, 4]), DarkPawn.new([1, 5]), DarkPawn.new([1, 6]), DarkPawn.new([1, 7])
   ],
-  [DarkPawn.new([2, 0]), LightPawn.new([2, 1]), ' ', LightPawn.new([2, 3]), ' ', ' ', ' ', ' '],
   [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
   [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+  [' ', ' ', ' ', LightRook.new([4, 3]), ' ', ' ', ' ', ' '],
   [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
   [
     LightPawn.new([6, 0]), LightPawn.new([6, 1]), LightPawn.new([6, 2]), LightPawn.new([6, 3]),
