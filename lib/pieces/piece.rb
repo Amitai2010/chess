@@ -9,9 +9,9 @@ class Piece
     @symbol = symbol
   end
 
-  #def valid_moves(board)
-  #  []
-  #end
+  def valid_moves(board)
+    []
+  end
 
   def enemy?(piece)
     piece.color != @color
