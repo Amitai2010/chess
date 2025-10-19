@@ -13,6 +13,7 @@ module KnightMoves
     options.each do |option|
       valid.push(option) if valid_move(board, option)
     end
+
     valid
   end
 

@@ -1,5 +1,5 @@
 module BishopMoves
-  def valid_moves(board)
+  def valid_moves_bishop(board)
     valid = []
     sides = %w[top-left top-right bottom-left bottom-right]
     sides.each do |side|
@@ -45,7 +45,6 @@ module BishopMoves
         break
       end
     end
-
     valid
   end
 end

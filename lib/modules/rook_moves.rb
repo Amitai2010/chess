@@ -1,5 +1,5 @@
 module RookMoves
-  def valid_moves(board)
+  def valid_moves_rook(board)
     valid = []
     sides = %w[left right down up]
     sides.each do |side|
@@ -38,7 +38,6 @@ module RookMoves
         break
       end
     end
-
     valid
   end
 end

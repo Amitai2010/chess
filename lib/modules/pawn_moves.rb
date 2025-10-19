@@ -22,7 +22,6 @@ module PawnMoves
         valid.push([@position[0] + direction, @position[1] + 1])
       end
     end
-
     valid
   end
 
