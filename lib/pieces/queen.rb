@@ -12,6 +12,10 @@ class LightQueen < Piece
   def valid_moves(board)
     valid_moves_bishop(board).concat(valid_moves_rook(board))
   end
+
+  def attack_squares(board)
+    valid_moves(board)
+  end
 end
 
 class DarkQueen < Piece
@@ -23,5 +27,9 @@ class DarkQueen < Piece
 
   def valid_moves(board)
     valid_moves_bishop(board).concat(valid_moves_rook(board))
+  end
+
+  def attack_squares(board)
+    valid_moves(board)
   end
 end

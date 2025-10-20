@@ -7,6 +7,9 @@ module BishopMoves
     end
     valid
   end
+  def attack_squares(board)
+    valid_moves_bishop(board)
+  end
 
   private
 

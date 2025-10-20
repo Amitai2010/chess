@@ -7,6 +7,9 @@ module RookMoves
     end
     valid
   end
+  def attack_squares(board)
+    valid_moves_rook(board)
+  end
 
   private
 

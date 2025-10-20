@@ -20,7 +20,7 @@ class Board
       ],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       [' ', ' ', DarkQueen.new([3, 2]), ' ', ' ', ' ', ' ', ' '],
-      [' ', ' ', ' ', LightRook.new([4, 3]), ' ', ' ', ' ', ' '],
+      [' ', DarkKing.new([4, 1]), ' ', ' ', ' ', ' ', ' ', ' '],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       [
         LightPawn.new([6, 0]), LightPawn.new([6, 1]), LightPawn.new([6, 2]), LightPawn.new([6, 3]),

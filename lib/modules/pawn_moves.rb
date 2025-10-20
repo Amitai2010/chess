@@ -25,6 +25,14 @@ module PawnMoves
     valid
   end
 
+  def attack_squares(board)
+    direction = @color == 'light' ? -1 : 1
+    squares = []
+    squares.push([@position[0] + direction, @position[1] - 1]) if board.game_board[@position[0] + direction][@position[1] - 1] != nil
+    squares.push([@position[0] + direction, @position[1] + 1]) if board.game_board[@position[0] + direction][@position[1] - 1] != nil
+    squares
+  end
+
   def pawn_conversion(conversion, board)
     if last_row?
       case conversion

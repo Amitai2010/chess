@@ -17,6 +17,10 @@ module KnightMoves
     valid
   end
 
+  def attack_squares(board)
+    valid_moves(board)
+  end
+
   private
 
   def valid_move(board, cord)
