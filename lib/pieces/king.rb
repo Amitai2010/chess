@@ -7,15 +7,21 @@ require_relative 'queen'
 require_relative '../modules/king_moves'
 
 class LightKing < Piece
+  attr_reader :color, :position, :symbol, :moved
+
   include KingMoves
   def initialize(position)
     super('light', position, '♔')
+    @moved = false
   end
 end
 
 class DarkKing < Piece
-    include KingMoves
+  attr_reader :color, :position, :symbol, :moved
+
+  include KingMoves
   def initialize(position)
     super('black', position, '♚')
+    @moved = false
   end
 end

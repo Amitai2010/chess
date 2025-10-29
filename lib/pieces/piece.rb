@@ -13,6 +13,17 @@ class Piece
     []
   end
 
+  def move(cords, board)
+    return unless valid_moves(board).include?(cords)
+
+    old_row, old_col = @position
+
+    board.game_board[old_row][old_col] = ' '
+
+    board.game_board[cords[0]][cords[1]] = self.class.new(@color, cords)
+    @position = cords
+  end
+
   def enemy?(piece)
     piece.color != @color
   end

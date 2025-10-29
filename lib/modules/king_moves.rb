@@ -6,7 +6,6 @@ require_relative '../pieces/queen'
 
 module KingMoves
   def valid_moves(board)
-
     candidates = find_candidates(board)
 
     attacked_squares = []
@@ -39,7 +38,53 @@ module KingMoves
     squares
   end
 
+  def move(cords, board)
+  end
+
+  def can_castle?(board, side)
+    row = (@color == 'light' ? 7 : 0)
+    king_col = 4
+    rook_col = side == 'left' ? 0 : 7
+    start_col = side == 'left' ? 1 : 5
+    end_col = side == 'left' ? 4 : 7
+
+
+    king = board.game_board[row][king_col]
+    rook = board.game_board[row][rook_col]
+
+    return false if king == ' ' || rook == ' '
+    return false if king.moved || rook.moved
+
+    return false unless castling_space(board, start_col, end_col, row)
+
+    @moved = true
+    true
+  end
+
   private
+
+  def attacked_squares_for(board, color)
+    attacked = []
+
+    board.game_board.each do |row|
+      row.each do |piece|
+        next if piece == ' '
+        next if piece.color == color
+
+        attacked.concat(piece.attack_squares(board))
+      end
+    end
+
+    attacked.uniq
+  end
+
+  def castling_space(board, starting_col, ending_col, row)
+    (starting_col...ending_col).each do |col|
+      return false unless board.game_board[row][col] == ' '
+      return false unless attacked_squares_for(board, @color).include?([row, col])
+    end
+    true
+  end
 
   def find_candidates(board)
     squares = []
