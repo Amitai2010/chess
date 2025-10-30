@@ -55,10 +55,9 @@ module KingMoves
     return false if king == ' ' || rook == ' '
     return false if king.moved || rook.moved
 
-    return false unless castling_space(board, start_col, end_col, row)
+    return false if castling_space(board, start_col, end_col, row)
     return false if check?(board)
 
-    @moved = true
     true
   end
 
@@ -78,7 +77,35 @@ module KingMoves
   end
 
   def mate?(board)
-    
+    return false unless check?(board)
+
+    candidates = valid_moves(board)
+    attacked_squares = attacked_squares_for(board, @color)
+
+    return true if attacked_squares.include?(candidates)
+
+    false
+  end
+
+  def castle(board, side)
+    return false, 'unable to castle to the supplied side' unless can_castle?(board, side)
+
+    king_col = side == 'left' ? 2 : 6
+    rook_col = side == 'left' ? 3 : 5
+    king_init_col = 4
+    rook_init_col = side == 'left' ? 0 : 7
+    king_type = @color == 'light' ? LightKing : DarkKing
+    rook_type = @color == 'light' ? LightRook : DarkRook
+    row = (@color == 'light' ? 7 : 0)
+
+    board.game_board[row][king_col] = king_type.new([row][king_col])
+    board.game_board[row][rook_col] = rook_type.new([row][rook_col])
+
+    board.game_board[row][king_init_col] = ' '
+    board.game_board[row][rook_init_col] = ' '
+
+    @moved = true
+    true
   end
 
   private
