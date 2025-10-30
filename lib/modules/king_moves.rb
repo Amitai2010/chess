@@ -56,9 +56,29 @@ module KingMoves
     return false if king.moved || rook.moved
 
     return false unless castling_space(board, start_col, end_col, row)
+    return false if check?(board)
 
     @moved = true
     true
+  end
+
+  def check?(board)
+    king_type = @color == 'light' ? LightKing : DarkKing
+
+    board.game_board.each do |row|
+      row.each do |square|
+        next unless square.is_a?(king_type)
+
+        if attacked_squares_for(board, @color).include?(square.position)
+          return true
+        end
+      end
+    end
+    false
+  end
+
+  def mate?(board)
+    
   end
 
   private

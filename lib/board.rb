@@ -19,11 +19,11 @@ class Board
         DarkPawn.new([1, 4]), ' ', DarkPawn.new([1, 6]), DarkPawn.new([1, 7])
       ],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-      [' ', DarkBishop.new([3, 1]), ' ', ' ', ' ', ' ', ' ', ' '],
+      [DarkBishop.new([3, 0]), ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       [
-        LightPawn.new([6, 0]), LightPawn.new([6, 1]), LightPawn.new([6, 2]), LightPawn.new([6, 3]),
+        LightPawn.new([6, 0]), LightPawn.new([6, 1]), LightPawn.new([6, 2]), ' ',
         ' ', LightPawn.new([6, 5]), LightPawn.new([6, 6]), LightPawn.new([6, 7])
       ],
       [
