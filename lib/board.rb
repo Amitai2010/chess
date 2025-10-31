@@ -27,7 +27,7 @@ class Board
         ' ', LightPawn.new([6, 5]), LightPawn.new([6, 6]), LightPawn.new([6, 7])
       ],
       [
-        LightRook.new([7, 0]), ' ', LightBishop.new([7, 2]), LightQueen.new([7, 3]),
+        LightRook.new([7, 0]), ' ', ' ', ' ',
         LightKing.new([7, 4]), ' ', ' ', LightRook.new([7, 7])
       ]
     ]
