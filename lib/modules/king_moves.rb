@@ -39,16 +39,20 @@ module KingMoves
   end
 
   def move(cords, board)
-    row = (@color == 'light' ? 7 : 0)
-    king_type = @color == 'light' ? LightKing : DarkKing
+    return unless valid_moves(board).include?(cords)
 
-    castle(board, 'left') if cords == [row, 2] && can_castle?(board, 'left')
-    castle(board, 'right') if cords == [row, 6] && can_castle?(board, 'right')
+    old_row, old_col = @position
+    board.game_board[old_row][old_col] = ' '
 
-    if valid_moves(board).include?(cords)
-      board.game_board[cords[0]][cords[1]] = king_type.new(cords)
-      board.game_board[@position[0]][@position[1]] = ' '
-    end
+    new_piece =
+      case self
+      when LightKing then LightKing.new(cords)
+      when DarkKing  then DarkKing.new(cords)
+      else self.class.new(@color, cords, @symbol)
+      end
+
+    board.game_board[cords[0]][cords[1]] = new_piece
+    @position = cords
   end
 
   def can_castle?(board, side)
@@ -119,6 +123,7 @@ module KingMoves
   end
 
   private
+
 
   def attacked_squares_for(board, color)
     attacked = []

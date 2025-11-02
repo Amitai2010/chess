@@ -19,37 +19,89 @@ class Game
     end
   end
 
-  def find_cords(algebric_notation)
-    case algebric_notation[-2].downcase
-    when 'a' then col = 0
-    when 'b' then col = 1
-    when 'c' then col = 2
-    when 'd' then col = 3
-    when 'e' then col = 4
-    when 'f' then col = 5
-    when 'g' then col = 6
-    when 'h' then col = 7
-    else
-      raise "Invalid file in notation: #{algebric_notation}"
+  private
+
+  def move_in_check?(board, initial_cords, cords)
+    king = find_king(board, @current_color)
+
+    if king.check?(board)
+      piece_type = board.game_board[initial_cords[0]][initial_cords[1]].class
+
+      checking_board = board.game_board.map do |row|
+        row.map { |square| square.is_a?(String) ? square : square.dup }
+      end
+
+      checking_board[cords[0]][cords[1]] = piece_type.new([cords[0], cords[1]])
+      checking_board[initial_cords[0]][initial_cords[1]] = ' '
+
+      temp_king = find_king(checking_board, @current_color)
+      return true unless temp_king.check?(checking_board)
+
+      false
     end
 
-    case algebric_notation[-1]
-    when '1' then row = 7
-    when '2' then row = 6
-    when '3' then row = 5
-    when '4' then row = 4
-    when '5' then row = 3
-    when '6' then row = 2
-    when '7' then row = 1
-    when '8' then row = 0
-    else
-      raise "Invalid rank in notation: #{algebric_notation}"
-    end
-
-    [row, col]
+    false
   end
 
-  private
+  def drew?(board)
+    Insufficient_Material?(board) || stalmate?(board)
+  end
+
+  def Insufficient_Material?(board)
+    matirial = { 'light_knights' => 0, 'light_bishops' => 0, 'dark_knights' => 0, 'dark_bishops' => 0 }
+
+    board.game_board.each do |row|
+      row.each do |square|
+        if square.is_a?(LightPawn) || square.is_a?(DarkPawn) || square.is_a?(LightQueen) || square.is_a?(DarkQueen) || square.is_a?(LightRook)  || square.is_a?(DarkRook)
+          return false
+        end
+
+        if square.is_a?(LightBishop)
+          material['light_bishops'] += 1
+        elsif square.is_a?(DarkBishop)
+          material['dark_bishops'] += 1
+        elsif square.is_a?(LightKnight)
+          material['light_knights'] += 1
+        elsif square.is_a?(DarkKnight)
+          material['dark_knights'] += 1
+        end
+      end
+    end
+    if (matirial['light_knights'] == 1 && matirial['light_bishops'] == 1) || matirial['light_bishops'] == 2
+      return false
+    end
+
+    if (matirial['dark_knights'] == 1 && matirial['dark_bishops'] == 1) || matirial['dark_bishops'] == 2
+      return false
+    end
+
+    true
+  end
+
+
+  def stalmate?(board)
+    possible_moves = []
+    color_bishop = @current_color == 'light' ? LightBishop : DarkBishop
+    color_rook = @current_color == 'light' ? LightRook : DarkRook
+
+    board.game_board.each do |row|
+      row.each do |square|
+        if square != ' '
+          next unless square.color == @current_color
+
+          if square.is_a?(color_bishop)
+            possible_moves.concat(square.valid_moves_bishop(board))
+          elsif square.is_a?(color_rook)
+            possible_moves.concat(square.valid_moves_rook(board))
+          else
+            possible_moves.concat(square.valid_moves(board))
+          end
+        end
+      end
+    end
+    king = find_king(board, @current_color)
+    possible_moves.empty? && !board.game_board[king[0]][king[1]].check?(board)
+  end
 
   def find_king(board, color)
     king_type = color == 'light' ? LightKing : DarkKing
@@ -81,4 +133,33 @@ class Game
   end
 
 
+  def find_cords(algebric_notation)
+    case algebric_notation[-2].downcase
+    when 'a' then col = 0
+    when 'b' then col = 1
+    when 'c' then col = 2
+    when 'd' then col = 3
+    when 'e' then col = 4
+    when 'f' then col = 5
+    when 'g' then col = 6
+    when 'h' then col = 7
+    else
+      raise "Invalid file in notation: #{algebric_notation}"
+    end
+
+    case algebric_notation[-1]
+    when '1' then row = 7
+    when '2' then row = 6
+    when '3' then row = 5
+    when '4' then row = 4
+    when '5' then row = 3
+    when '6' then row = 2
+    when '7' then row = 1
+    when '8' then row = 0
+    else
+      raise "Invalid rank in notation: #{algebric_notation}"
+    end
+
+    [row, col]
+  end
 end
