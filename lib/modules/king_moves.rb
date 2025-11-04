@@ -90,16 +90,6 @@ module KingMoves
     false
   end
 
-  def mate?(board)
-    return false unless check?(board)
-
-    candidates = valid_moves(board)
-    attacked_squares = attacked_squares_for(board, @color)
-
-    return true if attacked_squares.include?(candidates)
-
-    false
-  end
 
   def castle(board, side)
     return false, 'unable to castle to the supplied side' unless can_castle?(board, side)

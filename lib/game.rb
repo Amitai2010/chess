@@ -14,12 +14,98 @@ class Game
   end
 
   def play
+
+    puts 'Welcom to chess!'
+    @board.print_board
     loop do
-      
+      puts "#{@current_color} to move"
+      move = gets
+
+      piece = find_piece(move)
+      cords = find_cords(move)
+
+      if return_pieces(@board, piece, cords).length == 1
+        
+      end
     end
   end
 
   private
+
+  def checkmate?(board, color)
+    king = find_king(board, color)
+    return false unless king.check?(board)
+
+    color_bishop = color == 'light' ? LightBishop : DarkBishop
+    color_rook = color == 'light' ? LightRook : DarkRook
+
+    board.game_board.each do |row|
+      row.each do |square|
+        next if square == ' ' || square.color != color
+
+        valid_moves =
+          case square
+          when color_bishop then square.valid_moves_bishop(board)
+          when color_rook   then square.valid_moves_rook(board)
+          else square.valid_moves(board)
+          end
+
+        valid_moves.each do |move|
+          return false unless move_in_check?(board, square.position, move)
+        end
+      end
+    end
+
+    true
+  end
+
+  def return_pieces(board, piece, cords)
+    pieces = []
+
+    board.game_board.each do |row|
+      row.each do |square|
+        next if square == ' '
+        next unless square.is_a?(piece.class)
+
+        valid_moves =
+          case square
+          when LightBishop, DarkBishop then square.valid_moves_bishop(board)
+          when LightRook, DarkRook     then square.valid_moves_rook(board)
+          else square.valid_moves(board)
+          end
+
+        pieces << square if valid_moves.include?(cords)
+      end
+    end
+
+    pieces
+  end
+
+  def same_col?(pieces)
+    return true if pieces[0][1] == pieces[1][1]
+
+    false
+  end
+
+  def currect_piece_same_col(algebric_notation)
+    [find_row(algebric_notation), find_col(algebric_notation)]
+  end
+
+  def currect_piece_diff_col(algebraic_notation, pieces)
+    target_col = find_col(algebraic_notation)
+
+    matching_piece = pieces.find { |piece| piece.position[1] == target_col }
+
+    matching_piece ? matching_piece.position : nil
+  end
+
+  def find_row(algebraic_notation)
+    8 - algebraic_notation[2].to_i
+  end
+
+  def find_col(algebraic_notation)
+    algebraic_notation[-2].ord - 'a'.ord
+  end
 
   def move_in_check?(board, initial_cords, cords)
     king = find_king(board, @current_color)
@@ -47,8 +133,8 @@ class Game
     Insufficient_Material?(board) || stalmate?(board)
   end
 
-  def Insufficient_Material?(board)
-    matirial = { 'light_knights' => 0, 'light_bishops' => 0, 'dark_knights' => 0, 'dark_bishops' => 0 }
+  def Insufficient_Material(board)
+    material = { 'light_knights' => 0, 'light_bishops' => 0, 'dark_knights' => 0, 'dark_bishops' => 0 }
 
     board.game_board.each do |row|
       row.each do |square|
@@ -67,11 +153,11 @@ class Game
         end
       end
     end
-    if (matirial['light_knights'] == 1 && matirial['light_bishops'] == 1) || matirial['light_bishops'] == 2
+    if (material['light_knights'] == 1 && material['light_bishops'] == 1) || material['light_bishops'] == 2
       return false
     end
 
-    if (matirial['dark_knights'] == 1 && matirial['dark_bishops'] == 1) || matirial['dark_bishops'] == 2
+    if (material['dark_knights'] == 1 && material['dark_bishops'] == 1) || material['dark_bishops'] == 2
       return false
     end
 
@@ -108,7 +194,7 @@ class Game
 
     board.game_board.each do |row|
       row.each do |square|
-        return square.position if square.is_a?(king_type)
+        return square if square.is_a?(king_type)
       end
     end
   end
