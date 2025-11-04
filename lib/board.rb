@@ -10,14 +10,14 @@ class Board
 
   def initialize
     @game_board = [
-      [LightKing.new([0, 0]), ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-      [DarkKing.new([2, 0]), ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+      [DarkRook.new([0, 0]), DarkKnight.new([0, 1]), DarkBishop.new([0, 2]), DarkQueen.new([0, 3]), DarkKing.new([0, 4]), DarkBishop.new([0, 5]), DarkKnight.new([0, 6]), DarkRook.new([0, 7])],
+      [DarkPawn.new([1, 0]), DarkPawn.new([1, 1]), DarkPawn.new([1, 2]), DarkPawn.new([1, 3]), DarkPawn.new([1, 4]), DarkPawn.new([1, 5]), DarkPawn.new([1, 6]), DarkPawn.new([1, 7])],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+      [LightPawn.new([6, 0]), LightPawn.new([6, 1]), LightPawn.new([6, 2]), LightPawn.new([6, 3]), LightPawn.new([6, 4]), LightPawn.new([6, 5]), LightPawn.new([6, 6]), LightPawn.new([6, 7])],
+      [LightRook.new([7, 0]), LightKnight.new([7, 1]), LightBishop.new([7, 2]), LightQueen.new([7, 3]), LightKing.new([7, 4]), LightBishop.new([7, 5]), LightKnight.new([7, 6]), LightRook.new([7, 7])]
     ]
   end
 

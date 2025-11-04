@@ -2,7 +2,7 @@ require_relative 'piece'
 require_relative '../modules/rook_moves'
 
 class LightRook < Piece
-  attr_reader :color, :position, :symbol, :moved
+  attr_accessor :color, :position, :symbol, :moved
 
   include RookMoves
   def initialize(position)
@@ -12,7 +12,7 @@ class LightRook < Piece
 end
 
 class DarkRook < Piece
-  attr_reader :color, :position, :symbol, :moved
+  attr_accessor :color, :position, :symbol, :moved
 
   include RookMoves
   def initialize(position)

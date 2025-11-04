@@ -1,4 +1,9 @@
 module RookMoves
+
+  def valid_moves(board)
+    valid_moves_rook(board)
+  end
+
   def valid_moves_rook(board)
     valid = []
     sides = %w[left right down up]

@@ -5,6 +5,7 @@ require_relative 'pieces/pawn'
 require_relative 'pieces/rook'
 require_relative 'pieces/queen'
 require_relative 'board'
+require 'yaml'
 
 class Game
   def initialize
@@ -14,40 +15,119 @@ class Game
   end
 
   def play
-
-    puts 'Welcom to chess!'
+    puts 'Welcome to chess!'
     @board.print_board
+
     loop do
-      puts "#{@current_color} to move"
-      move = gets
+      puts "#{@current_color.capitalize} to move:"
+      king = find_king(@board, @current_color)
 
-      piece = find_piece(move)
-      cords = find_cords(move)
-
-      if return_pieces(@board, piece, cords).length == 1
-        
+      if king.check?(@board)
+        if checkmate?(@board, @current_color)
+          puts "Checkmate! #{@current_color == 'light' ? 'Black' : 'White'} wins!"
+          break
+        else
+          puts "You are in check!"
+        end
+      elsif drew?(@board)
+        puts "it`s a drew!"
+        break
       end
+
+      move = gets.chomp
+      if move == 'o-o'
+        if king.can_castle?(@board, 'right')
+          king.castle(@board, 'right')
+          @current_color = 'black'
+          next
+        else
+          puts 'cant castle'
+          next
+        end
+      elsif move == 'o-o-o'
+        if king.can_castle?(@board, 'left')
+          king.castle(@board, 'left')
+          @current_color = 'black'
+          next
+        else
+          puts 'cant castle'
+          next
+        end
+      elsif move == 'save'
+        save_game
+      end
+
+      piece_class = find_piece(move)
+      cords = find_cords(move)
+      pieces = return_pieces(@board, piece_class, cords)
+
+      if pieces.empty?
+        puts "No valid pieces can move there. Try again."
+        next
+      end
+
+      piece = if pieces.length > 1
+                disambiguate(move, pieces)
+              else
+                pieces.first
+              end
+
+      if piece.nil?
+        puts "Could not resolve which piece you meant."
+        next
+      end
+
+      if move_in_check?(@board, piece.position, cords)
+        puts "Illegal move – you can’t leave your king in check!"
+        next
+      end
+
+      piece.move(cords, @board)
+      @board.print_board
+
+      # Switch turns
+      @current_color = @current_color == 'light' ? 'black' : 'light'
+      @turn_count += 1
+    end
+  end
+
+  def self.load_game
+    if File.exist?('saves/chess_save.yaml')
+      YAML.load_file('saves/chess_save.yaml', permitted_classes: ObjectSpace.each_object(Class).to_a)
+    else
+      puts 'no saved game exists'
     end
   end
 
   private
+
+  def save_game
+    Dir.mkdir('saves') unless Dir.exist?('saves')
+    File.open('saves/chess_save.yaml', 'w') do |file|
+      file.puts YAML.dump(self)
+    end
+    puts 'game saved succesfully'
+  end
+
 
   def checkmate?(board, color)
     king = find_king(board, color)
     return false unless king.check?(board)
 
     color_bishop = color == 'light' ? LightBishop : DarkBishop
-    color_rook = color == 'light' ? LightRook : DarkRook
+    color_rook   = color == 'light' ? LightRook   : DarkRook
 
     board.game_board.each do |row|
       row.each do |square|
         next if square == ' ' || square.color != color
 
         valid_moves =
-          case square
-          when color_bishop then square.valid_moves_bishop(board)
-          when color_rook   then square.valid_moves_rook(board)
-          else square.valid_moves(board)
+          if square.is_a?(color_bishop)
+            square.valid_moves_bishop(board)
+          elsif square.is_a?(color_rook)
+            square.valid_moves_rook(board)
+          else
+            square.valid_moves(board)
           end
 
         valid_moves.each do |move|
@@ -65,7 +145,7 @@ class Game
     board.game_board.each do |row|
       row.each do |square|
         next if square == ' '
-        next unless square.is_a?(piece.class)
+        next unless square.is_a?(piece)
 
         valid_moves =
           case square
@@ -107,33 +187,51 @@ class Game
     algebraic_notation[-2].ord - 'a'.ord
   end
 
-  def move_in_check?(board, initial_cords, cords)
-    king = find_king(board, @current_color)
-
-    if king.check?(board)
-      piece_type = board.game_board[initial_cords[0]][initial_cords[1]].class
-
-      checking_board = board.game_board.map do |row|
-        row.map { |square| square.is_a?(String) ? square : square.dup }
-      end
-
-      checking_board[cords[0]][cords[1]] = piece_type.new([cords[0], cords[1]])
-      checking_board[initial_cords[0]][initial_cords[1]] = ' '
-
-      temp_king = find_king(checking_board, @current_color)
-      return true unless temp_king.check?(checking_board)
-
-      false
+  def disambiguate(algebraic_notation, pieces)
+    # If the move includes a file or rank to distinguish (like Nb2xa3)
+    if algebraic_notation[1] =~ /[a-h]/
+      col = algebraic_notation[1].ord - 'a'.ord
+      return pieces.find { |p| p.position[1] == col }
+    elsif algebraic_notation[1] =~ /[1-8]/
+      row = 8 - algebraic_notation[1].to_i
+      return pieces.find { |p| p.position[0] == row }
     end
 
-    false
+    nil
+  end
+
+
+  def deep_copy_board(board)
+    new_board = Board.new
+
+    new_board.game_board = board.game_board.map do |row|
+      row.map do |square|
+        square.is_a?(String) ? ' ' : square.clone
+      end
+    end
+
+    new_board
+  end
+
+  def move_in_check?(board, initial_cords, cords)
+    checking_board = deep_copy_board(board)
+
+    piece = checking_board.game_board[initial_cords[0]][initial_cords[1]]
+
+    checking_board.game_board[cords[0]][cords[1]] = piece.class.new(cords)
+
+    checking_board.game_board[initial_cords[0]][initial_cords[1]] = ' '
+
+    temp_king = find_king(checking_board, @current_color)
+
+    temp_king.check?(checking_board)
   end
 
   def drew?(board)
     Insufficient_Material?(board) || stalmate?(board)
   end
 
-  def Insufficient_Material(board)
+  def Insufficient_Material?(board)
     material = { 'light_knights' => 0, 'light_bishops' => 0, 'dark_knights' => 0, 'dark_bishops' => 0 }
 
     board.game_board.each do |row|
@@ -186,7 +284,7 @@ class Game
       end
     end
     king = find_king(board, @current_color)
-    possible_moves.empty? && !board.game_board[king[0]][king[1]].check?(board)
+    possible_moves.empty? && !king.check?(board)
   end
 
   def find_king(board, color)
@@ -200,16 +298,16 @@ class Game
   end
 
   def find_piece(algebric_notation)
-    case algebric_notation[0].downcase
-    when 'n'
+    case algebric_notation[0]
+    when 'N'
       piece_type = @current_color == 'light' ? LightKnight : DarkKnight
-    when 'k'
+    when 'K'
       piece_type = @current_color == 'light' ? LightKing : DarkKing
-    when 'b'
+    when 'B'
       piece_type = @current_color == 'light' ? LightBishop : DarkBishop
-    when 'q'
+    when 'Q'
       piece_type = @current_color == 'light' ? LightQueen : DarkQueen
-    when 'r'
+    when 'R'
       piece_type = @current_color == 'light' ? LightRook : DarkRook
     else
       piece_type = @current_color == 'light' ? LightPawn : DarkPawn

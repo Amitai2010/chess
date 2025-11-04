@@ -1,4 +1,9 @@
 module BishopMoves
+
+  def valid_moves(board)
+    valid_moves_bishop(board)
+  end
+
   def valid_moves_bishop(board)
     valid = []
     sides = %w[top-left top-right bottom-left bottom-right]
@@ -7,6 +12,7 @@ module BishopMoves
     end
     valid
   end
+
   def attack_squares(board)
     valid_moves_bishop(board)
   end

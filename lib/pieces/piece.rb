@@ -13,6 +13,13 @@ class Piece
     []
   end
 
+  def clone
+    self.class.new(@position.dup).tap do |new_piece|
+      new_piece.instance_variable_set(:@has_moved, @has_moved) if instance_variable_defined?(:@has_moved)
+    end
+  end
+
+
   def move(cords, board)
     return unless valid_moves(board).include?(cords)
 
@@ -20,7 +27,7 @@ class Piece
 
     board.game_board[old_row][old_col] = ' '
 
-    board.game_board[cords[0]][cords[1]] = self.class.new(@color, cords, @symbol)
+    board.game_board[cords[0]][cords[1]] = self.class.new(cords)
     @position = cords
   end
 

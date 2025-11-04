@@ -94,18 +94,21 @@ module KingMoves
   def castle(board, side)
     return false, 'unable to castle to the supplied side' unless can_castle?(board, side)
 
-    king_col = side == 'left' ? 2 : 6
-    rook_col = side == 'left' ? 3 : 5
+    row = (@color == 'light' ? 7 : 0)
     king_init_col = 4
     rook_init_col = side == 'left' ? 0 : 7
-    king_type = @color == 'light' ? LightKing : DarkKing
-    rook_type = @color == 'light' ? LightRook : DarkRook
-    row = (@color == 'light' ? 7 : 0)
+    king_target_col = side == 'left' ? 2 : 6
+    rook_target_col = side == 'left' ? 3 : 5
 
-    board.game_board[row][king_col] = king_type.new([row][king_col])
-    board.game_board[row][rook_col] = rook_type.new([row][rook_col])
-
+    # Move king
+    board.game_board[row][king_target_col] = self.class.new([row, king_target_col])
     board.game_board[row][king_init_col] = ' '
+    @position = [row, king_target_col]
+
+    # Move rook
+    rook = board.game_board[row][rook_init_col]
+    board.game_board[row][rook_target_col] = rook
+    rook.position = [row, rook_target_col]
     board.game_board[row][rook_init_col] = ' '
 
     @moved = true
