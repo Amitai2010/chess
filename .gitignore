@@ -1,0 +1,5 @@
+# Ignore save files
+saves/
+
+# Ignore any YAML files in general
+*.yaml
